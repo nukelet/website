@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>blog on nukelet&#39;s digital garden</title>
-    <link>https://example.com/blog/</link>
+    <link>https://www.nukelet.online/blog/</link>
     <description>Recent content in blog on nukelet&#39;s digital garden</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
     <lastBuildDate>Thu, 25 Jan 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://example.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://www.nukelet.online/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hello, world!</title>
-      <link>https://example.com/hello-world/</link>
+      <link>https://www.nukelet.online/hello-world/</link>
       <pubDate>Thu, 25 Jan 2024 00:00:00 +0000</pubDate>
-      <guid>https://example.com/hello-world/</guid>
+      <guid>https://www.nukelet.online/hello-world/</guid>
       <description>This is my first blog post. Hooray!&#xA;I&amp;rsquo;m still not sure what&amp;rsquo;s to become of this little webspace I&amp;rsquo;ve created for myself. At the moment, I&amp;rsquo;m enjoying the process of setting up the cloud infrastructure for hosting it (sometimes it&amp;rsquo;s good to take joy in the simple things, I think). It&amp;rsquo;s built with Hugo and packaged with Nix; a blog post about that should be coming soon. Special thanks to Jan Raasch for creating this Bearblog-inspired theme!</description>
     </item>
   </channel>

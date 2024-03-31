@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.com/whoami/</loc>
+    <loc>https://www.nukelet.online/whoami/</loc>
     <lastmod>2024-01-25T04:34:45-03:00</lastmod>
   </url><url>
-    <loc>https://example.com/</loc>
+    <loc>https://www.nukelet.online/</loc>
     <lastmod>2024-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.com/blog/</loc>
+    <loc>https://www.nukelet.online/blog/</loc>
     <lastmod>2024-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.com/hello-world/</loc>
+    <loc>https://www.nukelet.online/hello-world/</loc>
     <lastmod>2024-01-25T00:00:00+00:00</lastmod>
   </url>
 </urlset>
