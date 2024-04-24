@@ -23,9 +23,10 @@ free time.
 
 ## Contact
 
-You can reach me at `nukelet 64 🐌 gmail dot com`.
+You can reach me at `contact 🐌 nukelet dot com`.
 
 Here are some other digital spaces I like to hang out at:
 
+- [Mastodon](https://discuss.systems/@nukelet)
 - [Cohost](https://cohost.org/nukelet)
 - [Github](https://github.com/nukelet)
