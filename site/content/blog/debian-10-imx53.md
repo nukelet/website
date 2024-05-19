@@ -1,7 +1,7 @@
 +++
 title = "Installing Debian 10 on the i.MX53 devboard"
 date = "2024-05-19"
-description = "How this website is built and deployed."
+description = "An in-depth guide for embedded-curious people."
 draft = false
 tags = [
     "linux",
