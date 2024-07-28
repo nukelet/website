@@ -23,7 +23,7 @@ free time.
 
 ## Contact
 
-You can reach me at `contact 🐌 nukelet dot com`.
+You can reach me at `contact 🐌 nukelet dot com`, and you'll find my GPG key [here](https://keys.openpgp.org/search?q=vinicius%40nukelet.com).
 
 Here are some other digital spaces I like to hang out at:
 
