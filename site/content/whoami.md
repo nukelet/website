@@ -21,6 +21,10 @@ currently ~~struggling with~~ learning Mandarin Chinese. I'm also an avid
 music listener and enjoy dabbling in bass and brazilian guitar in my
 free time.
 
+I am also a member of [LKCAMP](https://lkcamp.dev), a student group from
+the University of Campinas, focused on contributing to FOSS projects
+(mostly the Linux kernel).
+
 ## Contact
 
 You can reach me at `contact 🐌 nukelet dot com`, and you'll find my GPG key [here](https://keys.openpgp.org/search?q=vinicius%40nukelet.com).
