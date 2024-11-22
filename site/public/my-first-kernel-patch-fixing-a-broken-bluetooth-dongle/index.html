@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="https://www.nukelet.com/images/favicon.png" />
+<title>My first kernel patch: fixing a broken bluetooth dongle | nukelet&#39;s digital garden</title>
+<meta name="title" content="My first kernel patch: fixing a broken bluetooth dongle" />
+<meta name="description" content="A debugging diary of how I wrote my first kernel patch." />
+<meta name="keywords" content="linux,kernel," />
+
+
+<meta property="og:url" content="https://www.nukelet.com/my-first-kernel-patch-fixing-a-broken-bluetooth-dongle/">
+  <meta property="og:site_name" content="nukelet&#39;s digital garden">
+  <meta property="og:title" content="My first kernel patch: fixing a broken bluetooth dongle">
+  <meta property="og:description" content="A debugging diary of how I wrote my first kernel patch.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2024-04-20T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-04-20T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Kernel">
+    <meta property="og:image" content="https://www.nukelet.com/images/share.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.nukelet.com/images/share.png">
+  <meta name="twitter:title" content="My first kernel patch: fixing a broken bluetooth dongle">
+  <meta name="twitter:description" content="A debugging diary of how I wrote my first kernel patch.">
+
+
+
+
+  <meta itemprop="name" content="My first kernel patch: fixing a broken bluetooth dongle">
+  <meta itemprop="description" content="A debugging diary of how I wrote my first kernel patch.">
+  <meta itemprop="datePublished" content="2024-04-20T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-04-20T00:00:00+00:00">
+  <meta itemprop="wordCount" content="1847">
+  <meta itemprop="image" content="https://www.nukelet.com/images/share.png">
+  <meta itemprop="keywords" content="Linux,Kernel">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>nukelet&#39;s digital garden</h2>
+</a>
+<nav><a href="/">home</a>
+
+<a href="/blog">blog</a>
+
+<a href="https://notes.nukelet.com">notes</a>
+
+<a href="/whoami/">whoami</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>My first kernel patch: fixing a broken bluetooth dongle</h1>
+<p>
+  <i>
+    <time datetime='2024-04-20' pubdate>
+      20 Apr, 2024
+    </time>
+  </i>
+</p>
+
+<content>
+  <h1 id="tldr">TL;DR</h1>
+<p>I bought a cheap Bluetooth USB dongle from AliExpress, and really wanted to use it, but it wouldn&rsquo;t connect to any devices on Linux. I was looking to get started with contributing to the kernel and decided to tackle this problem and potentially send my first patch.</p>
+<p>The issue was that the controller erroneously reported support for the <code>Read Encryption Key Size</code> HCI command; when the kernel tried to follow the standard and run it during the key exchange that happens when connecting to BT devices, the controller would bail out and the connection would fail. This worked fine on Windows because it straight up doesn&rsquo;t run this key size check (even though it is supposed to).</p>
+<p>The fix was simply adding a new quirk to hint that the controller doesn&rsquo;t actually support the command. <a href="https://lore.kernel.org/all/20240227014328.1052386-1-nukelet64@gmail.com/">The patch</a> was merged upstream and backported to Linux 6.8 and 6.6! This was my first patch to the kernel, and I was really happy to have it fix a real problem for me and <a href="https://bugzilla.kernel.org/show_bug.cgi?id=217870#c3">other users</a> of the USB dongle. :-)</p>
+<p>The following is a &ldquo;diary&rdquo; of sorts where I recorded my thought process while investigating and fixing the issue. It&rsquo;s all over the place, but maybe it will provide some sort of insight to someone investigating a similar issue? :')</p>
+<h1 id="debugging-diary">Debugging diary</h1>
+<p>I&rsquo;ll try to record my adventures debugging a broken bluetooth USB dongle on Linux.</p>
+<p>From the Aliexpress product page, it&rsquo;s a &ldquo;Baseus-BA07 USB Bluetooth 5.3 Dongle Adapter&rdquo;. It comes with the Actions Semi ATS2851 chipset, which has apparently been a source of <a href="https://marc.info/?l=linux-bluetooth&amp;w=2&amp;r=1&amp;s=ats2851&amp;q=b">headaches</a> for the kernel bluetooth folks.</p>
+<p>I have an Edifier 820NB bluetooth headset. It&rsquo;s great, has a huge battery life, and the audio quality is pretty good. I wear it pretty much 24/7 when I&rsquo;m outside, and would like to get it working with my dongle.</p>
+<p>However, when trying to connect to the headset, I get very weird behavior from the dongle. When trying to connect to it in KDE Plasma, the widget says it is connected, but the headset doesn&rsquo;t show up as an audio output. Also, after a little while, the headset seems to disconnect.</p>
+<h2 id="2024-02-24">2024-02-24</h2>
+<p>Upon taking a closer look at the BT packet exchange with <code>bluetoothctl</code> and <code>btmon</code>, it gets a little weirder when we try to connect to the headset：</p>
+<pre tabindex="0"><code>&gt; HCI Event: User Confirmation Request (0x33) plen 10                                                      #39 [hci0] 6.408429
+        Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+        Passkey: 386942
+@ MGMT Event: User Confirmation Request (0x000f) plen 12                                              {0x0001} [hci0] 6.408454
+        BR/EDR Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+        Confirm hint: 0x01
+        Value: 0x0005e77e
+bluetoothd[1217]: @ MGMT Command: User Confirmation Negative Reply (0x001d) plen 7                    {0x0001} [hci0] 6.408513
+        BR/EDR Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+&lt; HCI Command: User Confirmation Request Neg Reply (0x01|0x002d) plen 6                                    #40 [hci0] 6.408523
+        Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+&gt; HCI Event: Command Status (0x0f) plen 4                                                                  #41 [hci0] 6.410258
+      User Confirmation Request Neg Reply (0x01|0x002d) ncmd 1
+        Status: Unknown HCI Command (0x01)
+&lt; ACL Data TX: Handle 2048 flags 0x00 dlen 12                                                              #42 [hci0] 8.215009
+      L2CAP: Disconnection Request (0x06) ident 4 len 4
+        Destination CID: 65
+        Source CID: 64
+</code></pre><p>It would seem that we receive an &ldquo;User Confirmation Request (0x33)&rdquo; HCI event, and for some reason decide to reply with a negative reply.</p>
+<p>After a lot of struggle with <code>virt-manager</code>, I set up a Windows 11 VM with USB passthrough for the dongle just to capture this initial packet exchange on Wireshark and compare it with the Linux one, and I noticed that this specific HCI event doesn&rsquo;t happen on Windows at all <del>(which is kinda funny, because it was sent <strong>by the device</strong> to the host)</del>. We&rsquo;ll need to investigate this further, I guess.</p>
+<p><strong>Note</strong>: upon looking closely at the Wireshark dump from Linux, this error message is actually sent from the <em>controller</em> (i.e. the USB dongle) to the <em>host</em> (i.e., the machine the dongle is connected to). Neat! Now at the very least we know it&rsquo;s an issue with the dongle, and not the headset.</p>
+<p>Upon looking at the kernel source, I noticed the following:</p>
+<ol>
+<li>The ATS2851 chipset is defined in <code>drivers/bluetooth/btusb.c</code>:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>       { <span style="color:#a6e22e">USB_DEVICE</span>(<span style="color:#ae81ff">0x10d7</span>, <span style="color:#ae81ff">0xb012</span>), .driver_info <span style="color:#f92672">=</span> BTUSB_ACTIONS_SEMI },
+</span></span></code></pre></div><ol start="2">
+<li>The chipset seems to report features that it doesn&rsquo;t actually support; this has been accounted for by adding chipset-specific quirks to the device:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (id<span style="color:#f92672">-&gt;</span>driver_info <span style="color:#f92672">&amp;</span> BTUSB_ACTIONS_SEMI) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">/* Support is advertised, but not implemented */</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">set_bit</span>(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, <span style="color:#f92672">&amp;</span>hdev<span style="color:#f92672">-&gt;</span>quirks);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">set_bit</span>(HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER, <span style="color:#f92672">&amp;</span>hdev<span style="color:#f92672">-&gt;</span>quirks);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">set_bit</span>(HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT, <span style="color:#f92672">&amp;</span>hdev<span style="color:#f92672">-&gt;</span>quirks);
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">set_bit</span>(HCI_QUIRK_BROKEN_EXT_SCAN, <span style="color:#f92672">&amp;</span>hdev<span style="color:#f92672">-&gt;</span>quirks);
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><p>These quirk flags seem to be checked in various functions within <code>net/bluetooth</code> and alter the way the kernel responds to HCI commands/events.</p>
+<ol start="3">
+<li>The kernel stores a table of callbacks for each event:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> hci_ev {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">bool</span> req;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">union</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>func)(<span style="color:#66d9ef">struct</span> hci_dev <span style="color:#f92672">*</span>hdev, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>data,
+</span></span><span style="display:flex;"><span>			     <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>func_req)(<span style="color:#66d9ef">struct</span> hci_dev <span style="color:#f92672">*</span>hdev, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>data,
+</span></span><span style="display:flex;"><span>				 <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, u16 <span style="color:#f92672">*</span>opcode, u8 <span style="color:#f92672">*</span>status,
+</span></span><span style="display:flex;"><span>				 <span style="color:#66d9ef">hci_req_complete_t</span> <span style="color:#f92672">*</span>req_complete,
+</span></span><span style="display:flex;"><span>				 <span style="color:#66d9ef">hci_req_complete_skb_t</span> <span style="color:#f92672">*</span>req_complete_skb);
+</span></span><span style="display:flex;"><span>	};
+</span></span><span style="display:flex;"><span>	u16  min_len;
+</span></span><span style="display:flex;"><span>	u16  max_len;
+</span></span><span style="display:flex;"><span>} hci_ev_table[U8_MAX <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">/* [0x33 = HCI_EV_USER_CONFIRM_REQUEST] */</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">HCI_EV</span>(HCI_EV_USER_CONFIRM_REQUEST, hci_user_confirm_request_evt,
+</span></span><span style="display:flex;"><span>	       <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> hci_ev_user_confirm_req)),
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Side note, but the <code>HCI_EV</code> macro actually blew my mind a little bit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define HCI_EV_VL(_op, _func, _min_len, _max_len) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[_op] = { \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	.req = false, \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	.func = _func, \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	.min_len = _min_len, \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	.max_len = _max_len, \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define HCI_EV(_op, _func, _len) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	HCI_EV_VL(_op, _func, _len, _len)
+</span></span></span></code></pre></div><p>This is possible because apparently in C there&rsquo;s this arcane way of initializing arrays using <em>designators</em> (<a href="https://en.cppreference.com/w/c/language/array_initialization">reference</a>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> n[<span style="color:#ae81ff">5</span>] <span style="color:#f92672">=</span> {[<span style="color:#ae81ff">4</span>]<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>,[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>}; <span style="color:#75715e">// holds 1,2,3,4,5
+</span></span></span></code></pre></div><p>which allows you to initialize specific elements by index. Several years of C programming and I had never heard of this. TIL.</p>
+<p>At this point I took a look at the <code>hci_user_confirm_request_evt</code> callback and noticed it had a bunch of debug log messages that could prove useful. I then tried to investigate if there was a way to change the log level for a specific module (setting the whole kernel to debug level would flood <code>dmesg</code> massively, I think). Turns out the kernel has this really cool feature called <a href="https://docs.kernel.org/admin-guide/dynamic-debug-howto.html?highlight=dynamic+debug"><em>dynamic debugging</em></a>, which allows you to do just that (in fact, you can change the log level for specific <code>.c</code> files, which I think is super neat). <a href="https://stackoverflow.com/questions/50504516/enable-linux-kernel-driver-dev-dbg-debug-messages">This stack overflow answer</a> summarizes it nicely. I managed to enable debug logs for <code>hci_event.c</code> with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;file net/bluetooth/hci_event.c +p&#39;</span> &gt; /sys/kernel/debug/dynamic_debug/control
+</span></span></code></pre></div><p>Looking at <code>dmesg</code>, I noticed the following messages associated with event 0x33:</p>
+<pre tabindex="0"><code>[Sat Feb 24 21:21:38 2024] hci0: event 0x33
+[Sat Feb 24 21:21:38 2024] hci0: 
+[Sat Feb 24 21:21:38 2024] hci0: Local host already has link key
+</code></pre><p>That came from this piece of code inside <code>hci_user_confirm_request_evt</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>	<span style="color:#75715e">/* If no side requires MITM protection; auto-accept */</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> ((<span style="color:#f92672">!</span>loc_mitm <span style="color:#f92672">||</span> conn<span style="color:#f92672">-&gt;</span>remote_cap <span style="color:#f92672">==</span> HCI_IO_NO_INPUT_OUTPUT) <span style="color:#f92672">&amp;&amp;</span>
+</span></span><span style="display:flex;"><span>	    (<span style="color:#f92672">!</span>rem_mitm <span style="color:#f92672">||</span> conn<span style="color:#f92672">-&gt;</span>io_capability <span style="color:#f92672">==</span> HCI_IO_NO_INPUT_OUTPUT)) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">/* If there already exists link key in local host, leave the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 * decision to user space since the remote device could be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 * legitimate or malicious.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 */</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">hci_find_link_key</span>(hdev, <span style="color:#f92672">&amp;</span>ev<span style="color:#f92672">-&gt;</span>bdaddr)) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">bt_dev_dbg</span>(hdev, <span style="color:#e6db74">&#34;Local host already has link key&#34;</span>);
+</span></span><span style="display:flex;"><span>			confirm_hint <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">goto</span> confirm;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	confirm:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">mgmt_user_confirm_request</span>(hdev, <span style="color:#f92672">&amp;</span>ev<span style="color:#f92672">-&gt;</span>bdaddr, ACL_LINK, <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>					  <span style="color:#a6e22e">le32_to_cpu</span>(ev<span style="color:#f92672">-&gt;</span>passkey), confirm_hint);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	...
+</span></span></code></pre></div><p>This suggests that userspace is choosing to refuse the User Confirm Request.</p>
+<h2 id="2024-02-25">2024-02-25</h2>
+<p>It&rsquo;s a bright new day (well, afternoon) and the debugging continues. I managed to find the piece of code that (I think) controls the controls the <code>User Confirm Request</code> stuff in <a href="https://github.com/bluez/bluez">bluez</a> (<code>src/device.c</code>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">device_confirm_passkey</span>(<span style="color:#66d9ef">struct</span> btd_device <span style="color:#f92672">*</span>device, <span style="color:#66d9ef">uint8_t</span> type,
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">int32_t</span> passkey, <span style="color:#66d9ef">uint8_t</span> confirm_hint)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">/* Just-Works repairing policy */</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (confirm_hint <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">device_is_paired</span>(device, type)) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (btd_opts.jw_repairing <span style="color:#f92672">==</span> JW_REPAIRING_NEVER) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">btd_adapter_confirm_reply</span>(device<span style="color:#f92672">-&gt;</span>adapter,
+</span></span><span style="display:flex;"><span>						  <span style="color:#f92672">&amp;</span>device<span style="color:#f92672">-&gt;</span>bdaddr,
+</span></span><span style="display:flex;"><span>						  type, FALSE);
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (btd_opts.jw_repairing <span style="color:#f92672">==</span> JW_REPAIRING_ALWAYS) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">btd_adapter_confirm_reply</span>(device<span style="color:#f92672">-&gt;</span>adapter,
+</span></span><span style="display:flex;"><span>						  <span style="color:#f92672">&amp;</span>device<span style="color:#f92672">-&gt;</span>bdaddr,
+</span></span><span style="display:flex;"><span>						  type, TRUE);
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This behavior is controlled by the <code>JustWorksRepairing</code> option in <code>/etc/bluetooth/main.conf</code>. Now, this is a dirty hack, but since the controller doesn&rsquo;t support the <code>User Confirm Request Negative Reply</code> command, we can work around it with the config option. Setting <code>JustWorksRepairing = always</code> actually works, and the connection advances (yay!).</p>
+<p><strong>Note</strong>: should patch this in the kernel later (adding a quirk that hints that this command is not supported).</p>
+<p>However, we reach yet another roadblock™:</p>
+<pre tabindex="0"><code>&lt; HCI Command: Set Connection Encryption (0x01|0x0013) plen 3                                           #103 [hci0] 108.211268
+        Handle: 2048 Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+        Encryption: Enabled (0x01)
+&gt; HCI Event: Command Status (0x0f) plen 4                                                               #104 [hci0] 108.213088
+      Set Connection Encryption (0x01|0x0013) ncmd 1
+        Status: Success (0x00)
+&gt; HCI Event: Encryption Change (0x08) plen 4                                                            #105 [hci0] 108.302269
+        Status: Success (0x00)
+        Handle: 2048 Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+        Encryption: Enabled with E0 (0x01)
+&lt; HCI Command: Read Encryption Key Size (0x05|0x0008) plen 2                                            #106 [hci0] 108.302299
+        Handle: 2048 Address: 0C:AE:BD:5E:B2:A0 (Edifier International)
+&gt; HCI Event: Command Status (0x0f) plen 4                                                               #107 [hci0] 108.304100
+      Read Encryption Key Size (0x05|0x0008) ncmd 1
+        Status: Unknown HCI Command (0x01)
+</code></pre><p>Yet another command that the dongle doesn&rsquo;t support. From looking at the kernel source, I found that the only place where this command (<code>HCI_OP_READ_ENC_KEY_SIZE</code>) is invoked is in <code>net/bluetooth/hci_event.c</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">hci_encrypt_change_evt</span>(<span style="color:#66d9ef">struct</span> hci_dev <span style="color:#f92672">*</span>hdev, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>data,
+</span></span><span style="display:flex;"><span>				   <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">/* Try reading the encryption key size for encrypted ACL links */</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ev<span style="color:#f92672">-&gt;</span>status <span style="color:#f92672">&amp;&amp;</span> ev<span style="color:#f92672">-&gt;</span>encrypt <span style="color:#f92672">&amp;&amp;</span> conn<span style="color:#f92672">-&gt;</span>type <span style="color:#f92672">==</span> ACL_LINK) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">struct</span> hci_cp_read_enc_key_size cp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">/* Only send HCI_Read_Encryption_Key_Size if the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 * controller really supports it. If it doesn&#39;t, assume
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 * the default size (16).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 */</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>(hdev<span style="color:#f92672">-&gt;</span>commands[<span style="color:#ae81ff">20</span>] <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x10</span>)) {
+</span></span><span style="display:flex;"><span>			conn<span style="color:#f92672">-&gt;</span>enc_key_size <span style="color:#f92672">=</span> HCI_LINK_KEY_SIZE;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">goto</span> notify;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		cp.handle <span style="color:#f92672">=</span> <span style="color:#a6e22e">cpu_to_le16</span>(conn<span style="color:#f92672">-&gt;</span>handle);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">hci_send_cmd</span>(hdev, HCI_OP_READ_ENC_KEY_SIZE,
+</span></span><span style="display:flex;"><span>				 <span style="color:#66d9ef">sizeof</span>(cp), <span style="color:#f92672">&amp;</span>cp)) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">bt_dev_err</span>(hdev, <span style="color:#e6db74">&#34;sending read key size failed&#34;</span>);
+</span></span><span style="display:flex;"><span>			conn<span style="color:#f92672">-&gt;</span>enc_key_size <span style="color:#f92672">=</span> HCI_LINK_KEY_SIZE;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">goto</span> notify;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">goto</span> unlock;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	notify:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hci_encrypt_cfm</span>(conn, ev<span style="color:#f92672">-&gt;</span>status);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	unlock:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hci_dev_unlock</span>(hdev);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>I quickly put together a small patch that adds a new quirk to cover this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span>diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+</span></span><span style="display:flex;"><span>index d31edad7a056..0c0e06ea9286 100644
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--- a/drivers/bluetooth/btusb.c
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/drivers/bluetooth/btusb.c
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -4481,6 +4481,7 @@ static int btusb_probe(struct usb_interface *intf,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 		set_bit(HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER, &amp;hdev-&gt;quirks);
+</span></span><span style="display:flex;"><span> 		set_bit(HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT, &amp;hdev-&gt;quirks);
+</span></span><span style="display:flex;"><span> 		set_bit(HCI_QUIRK_BROKEN_EXT_SCAN, &amp;hdev-&gt;quirks);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		set_bit(HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE, &amp;hdev-&gt;quirks);
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 	}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> 	if (!reset)
+</span></span><span style="display:flex;"><span>diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+</span></span><span style="display:flex;"><span>index bdee5d649cc6..8c36e094ec99 100644
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--- a/include/net/bluetooth/hci.h
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/include/net/bluetooth/hci.h
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -330,6 +330,14 @@ enum {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 	* during the hdev-&gt;setup vendor callback.
+</span></span><span style="display:flex;"><span> 	*/
+</span></span><span style="display:flex;"><span> 	HCI_QUIRK_BROKEN_LE_CODED,
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">+
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	/*
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	* When this quirk is set, the HCI_OP_READ_ENC_KEY_SIZE command is
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	* skipped during an HCI_EV_ENCRYPT_CHANGE event. This is required
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	* for Actions Semiconductor ATS2851 based controllers, which erroneously
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	* claim to support it.
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	*/
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+	HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE,
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> };
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> /* HCI device flags */
+</span></span><span style="display:flex;"><span>diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+</span></span><span style="display:flex;"><span>index ef8c3bed7361..399f983bbb1d 100644
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--- a/net/bluetooth/hci_event.c
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/net/bluetooth/hci_event.c
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -3660,7 +3660,8 @@ static void hci_encrypt_change_evt(struct hci_dev *hdev, void *data,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> 		* controller really supports it. If it doesn&#39;t, assume
+</span></span><span style="display:flex;"><span> 		* the default size (16).
+</span></span><span style="display:flex;"><span> 		*/
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-		if (!(hdev-&gt;commands[20] &amp; 0x10)) {
+</span></span></span><span style="display:flex;"><span><span style="color:#f92672"></span><span style="color:#a6e22e">+		if (!(hdev-&gt;commands[20] &amp; 0x10) ||
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">+		   test_bit(HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE, &amp;hdev-&gt;quirks)) {
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e"></span> 			conn-&gt;enc_key_size = HCI_LINK_KEY_SIZE;
+</span></span><span style="display:flex;"><span> 			goto notify;
+</span></span><span style="display:flex;"><span> 		}
+</span></span></code></pre></div><p>Update: after spinning up the patched kernel on a Debian VM with USB passthrough (thanks <code>virt-manager</code>), this actually works! The headset connects and audio works just fine now. Curiously enough, the <code>User Confirm Request Negative Reply</code> issue didn&rsquo;t happen at all. I&rsquo;m still debating whether I should just add another quirk for it in the patch, but maybe it was just a red herring?</p>
+<p>I will look for guidance about cleaning this up and sending it as a patch for upstream. Very exciting!</p>
+<p>Also, huge shoutout to the FLUSP folks for <a href="https://flusp.ime.usp.br/kernel/Kernel-compilation-and-installation/">this guide</a>. It was very helpful.</p>
+
+</content>
+<p>
+  
+  <a href="https://www.nukelet.com/blog/linux/">#Linux</a>
+  
+  <a href="https://www.nukelet.com/blog/kernel/">#Kernel</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

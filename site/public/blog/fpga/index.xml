@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fpga on nukelet&#39;s digital garden</title>
+    <link>https://www.nukelet.com/blog/fpga/</link>
+    <description>Recent content in Fpga on nukelet&#39;s digital garden</description>
+    <generator>Hugo</generator>
+    <language>en-US</language>
+    <lastBuildDate>Wed, 15 May 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.nukelet.com/blog/fpga/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Attending CryptoRave 2024</title>
+      <link>https://www.nukelet.com/attending-cryptorave-2024/</link>
+      <pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.nukelet.com/attending-cryptorave-2024/</guid>
+      <description>The conference Last weekend I attended an annual conference called CryptoRave in São Paulo, Brazil. The event has a strong focus on security/privacy, cryptography, cyberactivism and software freedom, being part of a global movement that started with Edward Snowden&amp;rsquo;s leak of classified NSA documents in 2013.&#xA;There&amp;rsquo;s another fun twist: the conference is jam-packed with workshops and talks happening during the entire 24-hour duration of the event. There was a pretty wild variety of topics, ranging from things like IoT hacking and computer systems hardening for digital privacy, to the ethics of AI, transfeminist digital activism and the use of free software in national elections.</description>
+    </item>
+  </channel>
+</rss>

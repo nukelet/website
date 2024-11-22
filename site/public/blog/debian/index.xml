@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debian on nukelet&#39;s digital garden</title>
+    <link>https://www.nukelet.com/blog/debian/</link>
+    <description>Recent content in Debian on nukelet&#39;s digital garden</description>
+    <generator>Hugo</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.nukelet.com/blog/debian/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Installing Debian 10 on the i.MX53 devboard</title>
+      <link>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</link>
+      <pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</guid>
+      <description>Last week, one of my friends told me that we have a ton of i.MX53 Quick Start boards collecting dust in a storage room at our uni.&#xA;I was thinking of maybe doing an Embedded Linux workshop of some kind with the board, and also use it as an opportunity to learn about the Linux boot process on embedded devices and the process of generating a Debian installation from scratch.</description>
+    </item>
+  </channel>
+</rss>

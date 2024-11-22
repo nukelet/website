@@ -2,24 +2,52 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>nukelet&#39;s digital garden</title>
-    <link>https://www.nukelet.online/</link>
+    <link>https://www.nukelet.com/</link>
     <description>Recent content on nukelet&#39;s digital garden</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 25 Jan 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://www.nukelet.online/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.nukelet.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Installing Debian 10 on the i.MX53 devboard</title>
+      <link>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</link>
+      <pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</guid>
+      <description>Last week, one of my friends told me that we have a ton of i.MX53 Quick Start boards collecting dust in a storage room at our uni.&#xA;I was thinking of maybe doing an Embedded Linux workshop of some kind with the board, and also use it as an opportunity to learn about the Linux boot process on embedded devices and the process of generating a Debian installation from scratch.</description>
+    </item>
+    <item>
+      <title>Attending CryptoRave 2024</title>
+      <link>https://www.nukelet.com/attending-cryptorave-2024/</link>
+      <pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.nukelet.com/attending-cryptorave-2024/</guid>
+      <description>The conference Last weekend I attended an annual conference called CryptoRave in São Paulo, Brazil. The event has a strong focus on security/privacy, cryptography, cyberactivism and software freedom, being part of a global movement that started with Edward Snowden&amp;rsquo;s leak of classified NSA documents in 2013.&#xA;There&amp;rsquo;s another fun twist: the conference is jam-packed with workshops and talks happening during the entire 24-hour duration of the event. There was a pretty wild variety of topics, ranging from things like IoT hacking and computer systems hardening for digital privacy, to the ethics of AI, transfeminist digital activism and the use of free software in national elections.</description>
+    </item>
+    <item>
+      <title>Notes</title>
+      <link>https://www.nukelet.com/notes/</link>
+      <pubDate>Mon, 29 Apr 2024 03:34:27 -0300</pubDate>
+      <guid>https://www.nukelet.com/notes/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>My first kernel patch: fixing a broken bluetooth dongle</title>
+      <link>https://www.nukelet.com/my-first-kernel-patch-fixing-a-broken-bluetooth-dongle/</link>
+      <pubDate>Sat, 20 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.nukelet.com/my-first-kernel-patch-fixing-a-broken-bluetooth-dongle/</guid>
+      <description>TL;DR I bought a cheap Bluetooth USB dongle from AliExpress, and really wanted to use it, but it wouldn&amp;rsquo;t connect to any devices on Linux. I was looking to get started with contributing to the kernel and decided to tackle this problem and potentially send my first patch.&#xA;The issue was that the controller erroneously reported support for the Read Encryption Key Size HCI command; when the kernel tried to follow the standard and run it during the key exchange that happens when connecting to BT devices, the controller would bail out and the connection would fail.</description>
+    </item>
     <item>
       <title>whoami</title>
-      <link>https://www.nukelet.online/whoami/</link>
+      <link>https://www.nukelet.com/whoami/</link>
       <pubDate>Thu, 25 Jan 2024 04:34:45 -0300</pubDate>
-      <guid>https://www.nukelet.online/whoami/</guid>
+      <guid>https://www.nukelet.com/whoami/</guid>
       <description>About me I&amp;rsquo;m Vinicius, a 22-year-old Computer Engineering student from Brazil.&#xA;I enjoy tinkering with computers and making them break in funny ways. My main interests in CS are operating systems, computer architectures (particularly RISC-V), parallel computing and computer graphics. I&amp;rsquo;m currently getting my feet wet with contributing to the Linux kernel.&#xA;Other than that, I&amp;rsquo;m a huge fan of Linguistics, particularly typology. Language learning has been one of my favorite activities for a long time, and I&amp;rsquo;m currently struggling with learning Mandarin Chinese.</description>
     </item>
     <item>
       <title>Hello, world!</title>
-      <link>https://www.nukelet.online/hello-world/</link>
+      <link>https://www.nukelet.com/hello-world/</link>
       <pubDate>Thu, 25 Jan 2024 00:00:00 +0000</pubDate>
-      <guid>https://www.nukelet.online/hello-world/</guid>
+      <guid>https://www.nukelet.com/hello-world/</guid>
       <description>This is my first blog post. Hooray!&#xA;I&amp;rsquo;m still not sure what&amp;rsquo;s to become of this little webspace I&amp;rsquo;ve created for myself. At the moment, I&amp;rsquo;m enjoying the process of setting up the cloud infrastructure for hosting it (sometimes it&amp;rsquo;s good to take joy in the simple things, I think). It&amp;rsquo;s built with Hugo and packaged with Nix; a blog post about that should be coming soon. Special thanks to Jan Raasch for creating this Bearblog-inspired theme!</description>
     </item>
   </channel>

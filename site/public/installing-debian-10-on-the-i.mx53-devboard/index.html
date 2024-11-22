@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="https://www.nukelet.com/images/favicon.png" />
+<title>Installing Debian 10 on the i.MX53 devboard | nukelet&#39;s digital garden</title>
+<meta name="title" content="Installing Debian 10 on the i.MX53 devboard" />
+<meta name="description" content="An in-depth guide for embedded-curious people." />
+<meta name="keywords" content="linux,debian,embedded," />
+
+
+<meta property="og:url" content="https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/">
+  <meta property="og:site_name" content="nukelet&#39;s digital garden">
+  <meta property="og:title" content="Installing Debian 10 on the i.MX53 devboard">
+  <meta property="og:description" content="An in-depth guide for embedded-curious people.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2024-05-19T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-05-19T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Debian">
+    <meta property="article:tag" content="Embedded">
+    <meta property="og:image" content="https://www.nukelet.com/images/share.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.nukelet.com/images/share.png">
+  <meta name="twitter:title" content="Installing Debian 10 on the i.MX53 devboard">
+  <meta name="twitter:description" content="An in-depth guide for embedded-curious people.">
+
+
+
+
+  <meta itemprop="name" content="Installing Debian 10 on the i.MX53 devboard">
+  <meta itemprop="description" content="An in-depth guide for embedded-curious people.">
+  <meta itemprop="datePublished" content="2024-05-19T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-05-19T00:00:00+00:00">
+  <meta itemprop="wordCount" content="2153">
+  <meta itemprop="image" content="https://www.nukelet.com/images/share.png">
+  <meta itemprop="keywords" content="Linux,Debian,Embedded">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>nukelet&#39;s digital garden</h2>
+</a>
+<nav><a href="/">home</a>
+
+<a href="/blog">blog</a>
+
+<a href="https://notes.nukelet.com">notes</a>
+
+<a href="/whoami/">whoami</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Installing Debian 10 on the i.MX53 devboard</h1>
+<p>
+  <i>
+    <time datetime='2024-05-19' pubdate>
+      19 May, 2024
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Last week, one of my friends told me that we have a ton of
+<a href="https://www.nxp.com/design/design-center/development-boards-and-designs/i-mx-evaluation-and-development-boards/i-mx53-quick-start-board:IMX53QSB">i.MX53 Quick Start</a>
+boards collecting dust in a storage room at our uni.</p>
+<p><img src="/images/imx53-box.jpg" alt="One of the boxes we have at our department.">
+<img src="/images/imx53-board.jpg" alt="The i.MX53 board."></p>
+<p>I was thinking of maybe doing an Embedded Linux workshop of some kind with the board,
+and also use it as an opportunity to learn about the Linux boot process on embedded
+devices and the process of generating a Debian installation from scratch.</p>
+<p>This guide walks through the process of installing Debian 10 on the board, and is
+a modified version of the
+<a href="https://wiki.debian.org/InstallingDebianOn/Freescale/i.MX53%20Quick%20Start%20board/debootstrap">InstallingDebianOn</a>
+guide from the Debian wiki. I tried to add in-depth explanations (which I hope are helpful to someone out there).</p>
+<h3 id="partitioning-the-sd-card">Partitioning the SD card</h3>
+<p>First we&rsquo;ll set up an MBR partition table (didn&rsquo;t test this on GPT yet, but it <a href="https://www.barebox.org/doc/latest/boards/imx.html#using-gpt-on-i-mx">should be possible</a>) on a 4GiB SD card.
+Also, we&rsquo;ll make sure to leave 2 MiB of free space <strong>before</strong> the first partition; <code>fdisk</code> does this by default.</p>
+<p>We need <strong>two</strong> partitions: one for the boot files, and another one for the root filesystem (rootfs).</p>
+<p>I like using an interactive <code>fdisk</code> session to partition the disk (you can find a detailed tutorial <a href="https://tldp.org/HOWTO/Partition/fdisk_partitioning.html">here</a>):</p>
+<p><strong>Note</strong>: you&rsquo;ll have to change <code>/dev/sdd</code> to the appropriate device on your machine</p>
+<p>TODO: maybe rewrite this with <code>parted</code> as a one-liner</p>
+<pre tabindex="0"><code>$ sudo fdisk /dev/sdd  
+  
+Welcome to fdisk (util-linux 2.40).  
+Changes will remain in memory only, until you decide to write them.  
+Be careful before using the write command.  
+  
+  
+Command (m for help): o  
+Created a new DOS (MBR) disklabel with disk identifier 0x8d7f6430.  
+  
+Command (m for help): n  
+Partition type  
+  p   primary (0 primary, 0 extended, 4 free)  
+  e   extended (container for logical partitions)  
+Select (default p): p  
+Partition number (1-4, default 1): 1  
+First sector (2048-7716863, default 2048): 2048  
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-7716863, default 7716863): +512M  
+  
+Created a new partition 1 of type &#39;Linux&#39; and of size 512 MiB.  
+  
+Command (m for help): n  
+Partition type  
+  p   primary (1 primary, 0 extended, 3 free)  
+  e   extended (container for logical partitions)  
+Select (default p): p  
+Partition number (2-4, default 2): 2  
+First sector (1050624-7716863, default 1050624):    
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (1050624-7716863, default 7716863):    
+  
+Created a new partition 2 of type &#39;Linux&#39; and of size 3.2 GiB.  
+  
+Command (m for help): w  
+The partition table has been altered.  
+Calling ioctl() to re-read partition table.  
+Syncing disks.
+</code></pre><p>This gives us the following:</p>
+<pre tabindex="0"><code>$ sudo fdisk -l /dev/sdd  
+Disk /dev/sdd: 3.68 GiB, 3951034368 bytes, 7716864 sectors  
+Disk model: STORAGE DEVICE     
+Units: sectors of 1 * 512 = 512 bytes  
+Sector size (logical/physical): 512 bytes / 512 bytes  
+I/O size (minimum/optimal): 512 bytes / 512 bytes  
+Disklabel type: dos  
+Disk identifier: 0x8d7f6430  
+  
+Device     Boot   Start     End Sectors  Size Id Type  
+/dev/sdd1          2048 1050623 1048576  512M 83 Linux  
+/dev/sdd2       1050624 7716863 6666240  3.2G 83 Linux
+</code></pre><p>Notice that the units are given in terms of 512-byte sectors; our first partition, <code>dev/sdd1</code>, starts at an offset of 2048 * 512 = 1048576 (1 MiB).</p>
+<p>We&rsquo;ll format the boot partition as <code>ext2</code> and the other one as <code>ext4</code>:</p>
+<pre tabindex="0"><code>$ sudo mkfs.ext2 -L &#34;MX53_BOOT&#34; /dev/sdd1
+$ sudo mkfs.ext4 -T small -L &#34;MX53_ROOT&#34; /dev/sdd2
+</code></pre><p>(<code>-T small</code> is optional here).</p>
+<h3 id="installing-u-boot">Installing u-boot</h3>
+<p>Now here comes something really cool: <a href="https://en.wikipedia.org/wiki/Das_U-Boot">u-boot</a>, aka the <strong>U</strong>niversal <strong>B</strong>oot <strong>L</strong>oader. Almost every embedded platform out there uses this as a bootloader. The i.MX53 is no exception.</p>
+<p>Every platform has a different process of installation for u-boot (I don&rsquo;t understand it very well myself), but for the i.MX53 apparently you just need to place it somewhere between the beginning of the disk and the first partition (which is honestly pretty cool). We just have to make sure not to overwrite the MBR table in the process (which for our use case won&rsquo;t exceed 1 KiB).</p>
+<p>In order to achieve this, we will fetch the u-boot image for the iMX53 board from the Debian repos, and write it to an offset of 2 * 512 bytes = 1 KiB into the SD card, before the first partition starts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget <span style="color:#e6db74">&#34;http://ftp.us.debian.org/debian/dists/buster/main/installer-armhf/current/images/u-boot/MX53LOCO/u-boot.imx.gz&#34;</span>
+</span></span><span style="display:flex;"><span>$ zcat u-boot.imx.gz &gt; u-boot.imx
+</span></span><span style="display:flex;"><span>$ sudo dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>u-boot.imx of<span style="color:#f92672">=</span>/dev/sdd seek<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> bs<span style="color:#f92672">=</span><span style="color:#ae81ff">512</span>
+</span></span></code></pre></div><p>Let&rsquo;s quickly confirm we didn&rsquo;t mess up the MBR table by doing this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo sfdisk --verify /dev/sdd
+</span></span><span style="display:flex;"><span>/dev/sdd:  
+</span></span><span style="display:flex;"><span>No errors detected.
+</span></span></code></pre></div><p>The bootloader uses the serial (RS-232) port on the board, so in order to view the output and use the console you&rsquo;ll probably need an RS-232 to USB adapter. You can use <code>minicom</code> in order to view the serial output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo minicom -D /dev/ttyUSB0
+</span></span></code></pre></div><p>To save you from future headaches, you can press <code>Ctrl+A -&gt; O</code> to open the configuration menu, then go into the <code>Serial port setup</code> window and press <code>F</code> in order to disable Hardware Flow Control and allow you to type characters into the console
+(you need to disable it because your RS-232 adapter most likely doesn&rsquo;t support it, which makes you unable to
+type into the console).</p>
+<p>If all goes well, when you insert the SD card into the i.MX53 and reset the board, you should see something like the following on the serial port:</p>
+<pre tabindex="0"><code>U-Boot 2019.01+dfsg-7 (May 14 2019 - 02:07:44 +0000)  
+  
+CPU:   Freescale i.MX53 rev2.1 at 800 MHz  
+Reset cause: POR  
+Board: MX53 LOCO  
+I2C:   ready  
+DRAM:  1 GiB  
+MMC:   FSL_SDHC: 0, FSL_SDHC: 1  
+Loading Environment from MMC... *** Warning - bad CRC, using default environment  
+  
+In:    serial  
+Out:   serial  
+Err:   serial                                                                   
+Net:   FEC                                                                      
+Hit any key to stop autoboot:  0                                                
+switch to partitions #0, OK                                                     
+mmc0 is current device                                                          
+** File not found boot.scr **                                                   
+** File not found zImage **
+</code></pre><h3 id="generating-the-rootfs">Generating the rootfs</h3>
+<p><strong>Important</strong>: this section assumes you&rsquo;re using a Debian-based system. This should probably work on other distros, but it is untested. Experiment at your own risk. :-)</p>
+<p>We will need <code>debootstrap</code> &ndash; one of the coolest tools ever in the embedded Linux world &ndash; which will generate a Debian rootfs that we can use on the board. We will also need to use QEMU in order to emulate an <code>arm</code> host when building the rootfs:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo apt update
+</span></span><span style="display:flex;"><span>$ sudo apt install debootstrap qemu-user-static
+</span></span></code></pre></div><p>Now let&rsquo;s mount the partitions we created earlier:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo mkdir -pv /mnt/debinst
+</span></span><span style="display:flex;"><span>$ sudo mount LABEL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;MX53_ROOT&#34;</span> /mnt/debinst
+</span></span><span style="display:flex;"><span>$ sudo mkdir -pv /mnt/debinst/boot
+</span></span><span style="display:flex;"><span>$ sudo mount LABEL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;MX53_BOOT&#34;</span> /mnt/debinst/boot
+</span></span></code></pre></div><p>Then we can finally run the first stage of <code>debootstrap</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo debootstrap --arch armhf --foreign buster /mnt/debinst http://ftp.us.debian.org/debian
+</span></span></code></pre></div><p>After this is finished, we will <code>chroot</code> into the recently created rootfs to continue with the installation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo cp -pv /usr/bin/qemu-arm-static /mnt/debinst/usr/bin/
+</span></span><span style="display:flex;"><span>$ sudo chroot /mnt/debinst qemu-arm-static /bin/bash
+</span></span></code></pre></div><p>Notice how we copy the <code>qemu-arm-static</code> binary into the rootfs, and then immediately start bash inside a virtualized <code>arm</code> environment as we chroot (i.e., from now on we&rsquo;re running everything in a QEMU <code>arm</code> platform).</p>
+<p>You should now be in a chroot shell withing the <code>debootstrap</code>-generated rootfs. We will then clean up our environment variables (which were inherited from the host &ndash; we don&rsquo;t want them):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ env -i bash     <span style="color:#75715e"># Clear all env vars except for the indispensable ones</span>
+</span></span><span style="display:flex;"><span>$ export TERM<span style="color:#f92672">=</span>xterm-color
+</span></span><span style="display:flex;"><span>$ export HOME<span style="color:#f92672">=</span>/root
+</span></span><span style="display:flex;"><span>$ export LANG<span style="color:#f92672">=</span>C.UTF-8
+</span></span></code></pre></div><p>Next, we can run the second (and final) stage of <code>debootstrap</code>. This is only necessary when creating a Debian rootfs for a foreign architecture (hence the <code>--foreign</code> flag earlier) &ndash; the first stage will download and unpack all the <code>.deb</code> files, while the second one runs all the package configuration scripts (which can only be done on the target architecture). When targeting the same arch as the host the two stages are merged.</p>
+<p>Run the following and go grab some coffee, because this might take a seriously long time depending on how beefy your CPU is. :-) Also make sure to use an SD card with decent read/write speeds!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ /debootstrap/debootstrap --second-stage
+</span></span></code></pre></div><p>If you got this far, congratulations! 🎉 Hopefully the wait wasn&rsquo;t too long. Now it&rsquo;s time to do some basic housekeeping and configuration of the rootfs.</p>
+<h4 id="installing-a-terminal-editor">Installing a terminal editor</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ apt install ncurses-term
+</span></span><span style="display:flex;"><span>$ apt install vim nano    <span style="color:#75715e"># choose your favorite editor</span>
+</span></span></code></pre></div><h4 id="setting-up-etcfstab">Setting up <code>/etc/fstab</code></h4>
+<p>Here we will configure the automounting of partitions. The SD card for the i.MX53 should be in <code>/dev/mmcblk0</code>:</p>
+<pre tabindex="0"><code class="language-/etc/fstab" data-lang="/etc/fstab">/dev/mmcblk0p2    /        auto    errors=remount-ro    0 1
+/dev/mmcblk0p1    /boot    auto    ro,nosuid,nodev      0 1 
+</code></pre><h4 id="adjusting-the-timezone">Adjusting the timezone</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ dpkg-reconfigure tzdata
+</span></span></code></pre></div><h4 id="network-configuration">Network configuration</h4>
+<p>If we want ethernet to work &ldquo;out of the box&rdquo;, we need to configure the <code>eth0</code> interface to use DHCP:</p>
+<pre tabindex="0"><code>$ nano /etc/network/interfaces
+</code></pre><pre tabindex="0"><code class="language-/etc/networks/interfaces" data-lang="/etc/networks/interfaces"># interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+allow-hotplug eth0
+iface eth0 inet dhcp
+</code></pre><p>And don&rsquo;t forget to set the hostname (you can set this to anything you&rsquo;d like):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ echo imx53 &gt; /etc/hostname
+</span></span></code></pre></div><p>Also install <code>ssh</code> for later:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ apt install ssh
+</span></span></code></pre></div><h4 id="console-configuration">Console configuration</h4>
+<p>This will avoid headaches later on:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ apt install console-setup
+</span></span></code></pre></div><h4 id="setting-up-accounts">Setting up accounts</h4>
+<p>Let&rsquo;s set up the password for the root account, and create a privileged user called <code>lkcamp</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ passwd
+</span></span><span style="display:flex;"><span>$ useradd -m -G users,audio,adm,sudo lkcamp
+</span></span><span style="display:flex;"><span>$ passwd lkcamp
+</span></span></code></pre></div><h3 id="installing-the-kernel-and-configuring-u-boot">Installing the kernel and configuring u-boot</h3>
+<p><strong>Important</strong>: make sure to follow these steps carefully or the board won&rsquo;t boot into Linux. :-)</p>
+<p>Install the following packages:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ apt install linux-image-armmp u-boot-imx init
+</span></span></code></pre></div><p>The <code>linux-image-armmp</code> is of particular importance to us and will, among other things, place the kernel images in <code>/boot</code> and run a script to generate an <code>initramfs</code>, which will leave you with something like this:</p>
+<pre tabindex="0"><code class="language-/boot" data-lang="/boot">$ ls -lah /boot
+total 26M
+drwxr-xr-x.  3 root root 4.0K May 15 23:55 .
+drwxr-xr-x. 18 root root 1.0K May 15 23:52 ..
+-rw-r--r--.  1 root root 3.0M Jun 30  2022 System.map-4.19.0-21-armmp
+-rw-r--r--.  1 root root 205K Jun 30  2022 config-4.19.0-21-armmp
+-rw-r--r--.  1 root root  19M May 15 23:55 initrd.img-4.19.0-21-armmp
+drwx------.  2 root root  16K May 15 23:31 lost+found
+-rw-r--r--.  1 root root 4.0M Jun 30  2022 vmlinuz-4.19.0-21-armmp
+</code></pre><p>Now we have to configure <code>flash-kernel</code>, which is responsible for setting up u-boot to load the kernel we just generated. Start by installing it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ apt install flash-kernel
+</span></span></code></pre></div><p>We have to specify the string that defines our machine:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;Freescale i.MX53 Quick Start Board&#34;</span> &gt; /etc/flash-kernel/machine
+</span></span></code></pre></div><p>Now, all the supported <code>flash-kernel</code> targets are defined in <code>/usr/share/flash-kernel/db/all.db</code>. You might notice that there is already an entry for the <code>Freescale i.MX53 Quick Start Board</code>, but it is incomplete (for some reason) and we need to manually patch some things. First of all, find the entry for the board and change it to this:</p>
+<pre tabindex="0"><code class="language-/usr/share/flash-kernel/db/all.db" data-lang="/usr/share/flash-kernel/db/all.db">Machine: Freescale i.MX53 Quick Start Board
+Machine: Freescale MX53 LOCO Board
+Kernel-Flavors: armmp mx5
+DTB-Id: imx53-qsb.dtb
+Boot-DTB-Path: /boot/board.dtb
+U-Boot-Kernel-Address: 0x70008000
+U-Boot-Initrd-Address: 0x72000000
+Boot-Kernel-Path: /boot/uImage
+Boot-Initrd-Path: /boot/uInitrd
+Required-Packages: u-boot-tools
+Bootloader-Sets-Incorrect-Root: no
+U-Boot-Script-Name: bootscr.mx5-custom
+Boot-Script-Path: /boot/boot.scr
+</code></pre><p>We will need to write the custom script specified in <code>U-Boot-Script-Name</code>. In order to do that, we will start from a copy of the provided generic u-boot script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cp -pv /etc/flash-kernel/bootscript/bootscr.uboot-generic /etc/flash-kernel/bootscript/bootscr.mx5-custom
+</span></span></code></pre></div><p>Then we will edit <code>/etc/flash-kernel/bootscript/bootscr.mx5-custom</code> and add the following environment variables to the <strong>beginning</strong> of the script:</p>
+<pre tabindex="0"><code class="language-bootscr.mx5-custom" data-lang="bootscr.mx5-custom">setenv distro_bootpart ${mmcpart}
+setenv boot_targets mmc
+setenv fdtfile ${fdt_file}
+setenv bootpart ${mmcpart}
+setenv devnum ${mmcdev}
+setenv console ttymxc0
+setenv devtype mmc
+setenv fdt_addr_r ${fdt_addr}
+setenv ramdisk_addr_r ${loadaddr}
+setenv kernel_addr_r 0x70008000
+setenv prefix /
+</code></pre><p>Finally, we need to set a kernel command so that Linux can mount our rootfs during boot. Add the following to <code>/etc/default/flash-kernel</code>:</p>
+<pre tabindex="0"><code class="language-/etc/default/flash-kernel" data-lang="/etc/default/flash-kernel">LINUX_KERNEL_CMDLINE=&#34;root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait fixrtc&#34;
+</code></pre><p>Notice how we told it that our root partition is on <code>/dev/mmcblk0p2</code> and that it is an <code>ext4</code> filesystem. :-)</p>
+<p>That&rsquo;s it! Now we only need to run <code>flash-kernel</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ flash-kernel
+</span></span></code></pre></div><p>After it does its thing, you should have something like the following in your <code>/boot</code> folder:</p>
+<pre tabindex="0"><code>$ ls -lah /boot
+total 72M
+drwxr-xr-x.  4 root root 4.0K May 16 00:29 .
+drwxr-xr-x. 18 root root 1.0K May 16 00:09 ..
+-rw-r--r--.  1 root root 3.0M Jun 30  2022 System.map-4.19.0-21-armmp
+-rw-r--r--.  1 root root  21K May 16 00:29 board.dtb
+-rw-r--r--.  1 root root 3.2K May 16 00:29 boot.scr
+-rw-r--r--.  1 root root 205K Jun 30  2022 config-4.19.0-21-armmp
+lrwxrwxrwx.  1 root root   36 May 16 00:29 dtb -&gt; dtbs/4.19.0-21-armmp/./imx53-qsb.dtb
+lrwxrwxrwx.  1 root root   36 May 16 00:29 dtb-4.19.0-21-armmp -&gt; dtbs/4.19.0-21-armmp/./imx53-qsb.dtb
+lrwxrwxrwx.  1 root root   36 May 16 00:08 dtb.bak -&gt; dtbs/4.19.0-21-armmp/./imx53-qsb.dtb
+drwxr-xr-x.  3 root root 4.0K May 16 00:08 dtbs
+-rw-r--r--.  1 root root  19M May 15 23:55 initrd.img-4.19.0-21-armmp
+drwx------.  2 root root  16K May 15 23:31 lost+found
+-rw-r--r--.  1 root root 4.0M May 16 00:29 uImage
+-rw-r--r--.  1 root root 4.1M May 16 00:08 uImage.bak
+-rw-r--r--.  1 root root  19M May 16 00:29 uInitrd
+-rw-r--r--.  1 root root  19M May 16 00:09 uInitrd.bak
+-rw-r--r--.  1 root root 4.0M Jun 30  2022 vmlinuz-4.19.0-21-armmp
+</code></pre><p>Now cross your fingers, insert the SD card on the board and press that reset button. If everything goes well, you should see Linux booting. Congrats! 🎉</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li>Figure out how to boot Debian 12 on this thing with the 6.1 kernel</li>
+<li>Investigate U-Boot in more depth; maybe generate a rootfs with Buildroot,
+compile a custom kernel + initramfs and try to boot it by hand from the U-Boot console?</li>
+</ul>
+
+</content>
+<p>
+  
+  <a href="https://www.nukelet.com/blog/linux/">#Linux</a>
+  
+  <a href="https://www.nukelet.com/blog/debian/">#Debian</a>
+  
+  <a href="https://www.nukelet.com/blog/embedded/">#Embedded</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>blog on nukelet&#39;s digital garden</title>
-    <link>https://www.nukelet.com/blog/</link>
-    <description>Recent content in blog on nukelet&#39;s digital garden</description>
+    <title>Linux on nukelet&#39;s digital garden</title>
+    <link>https://www.nukelet.com/blog/linux/</link>
+    <description>Recent content in Linux on nukelet&#39;s digital garden</description>
     <generator>Hugo</generator>
     <language>en-US</language>
     <lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://www.nukelet.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://www.nukelet.com/blog/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Installing Debian 10 on the i.MX53 devboard</title>
       <link>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</link>
@@ -28,13 +28,6 @@
       <pubDate>Sat, 20 Apr 2024 00:00:00 +0000</pubDate>
       <guid>https://www.nukelet.com/my-first-kernel-patch-fixing-a-broken-bluetooth-dongle/</guid>
       <description>TL;DR I bought a cheap Bluetooth USB dongle from AliExpress, and really wanted to use it, but it wouldn&amp;rsquo;t connect to any devices on Linux. I was looking to get started with contributing to the kernel and decided to tackle this problem and potentially send my first patch.&#xA;The issue was that the controller erroneously reported support for the Read Encryption Key Size HCI command; when the kernel tried to follow the standard and run it during the key exchange that happens when connecting to BT devices, the controller would bail out and the connection would fail.</description>
-    </item>
-    <item>
-      <title>Hello, world!</title>
-      <link>https://www.nukelet.com/hello-world/</link>
-      <pubDate>Thu, 25 Jan 2024 00:00:00 +0000</pubDate>
-      <guid>https://www.nukelet.com/hello-world/</guid>
-      <description>This is my first blog post. Hooray!&#xA;I&amp;rsquo;m still not sure what&amp;rsquo;s to become of this little webspace I&amp;rsquo;ve created for myself. At the moment, I&amp;rsquo;m enjoying the process of setting up the cloud infrastructure for hosting it (sometimes it&amp;rsquo;s good to take joy in the simple things, I think). It&amp;rsquo;s built with Hugo and packaged with Nix; a blog post about that should be coming soon. Special thanks to Jan Raasch for creating this Bearblog-inspired theme!</description>
     </item>
   </channel>
 </rss>
