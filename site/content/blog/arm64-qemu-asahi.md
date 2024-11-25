@@ -1,7 +1,7 @@
 +++
 title = "ARM64 QEMU setup for kernel development on Asahi Linux"
 date = "2024-11-22"
-description = "A debugging diary of how I wrote my first kernel patch."
+description = "Running small, KVM-accelerated ARM64 virtual machines for kernel development on M1 hardware"
 draft = false
 tags = [
     "linux",
