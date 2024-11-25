@@ -6,7 +6,7 @@ baseURL = "https://www.nukelet.com"
 theme = 'hugo-bearblog'
 
 # Basic metadata configuration for your blog.
-title = "nukelet's digital garden"
+title = "nukelet's digital garden 🌱"
 author = "nukelet"
 languageCode = "en-US"
 
