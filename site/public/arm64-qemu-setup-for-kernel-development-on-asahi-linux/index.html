@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="https://www.nukelet.com/images/favicon.png" />
+<title>ARM64 QEMU setup for kernel development on Asahi Linux | nukelet&#39;s digital garden 🌱</title>
+<meta name="title" content="ARM64 QEMU setup for kernel development on Asahi Linux" />
+<meta name="description" content="A debugging diary of how I wrote my first kernel patch." />
+<meta name="keywords" content="linux,kernel," />
+
+
+<meta property="og:title" content="ARM64 QEMU setup for kernel development on Asahi Linux" />
+<meta property="og:description" content="A debugging diary of how I wrote my first kernel patch." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.nukelet.com/arm64-qemu-setup-for-kernel-development-on-asahi-linux/" /><meta property="og:image" content="https://www.nukelet.com/images/share.png" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2024-11-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-11-22T00:00:00+00:00" /><meta property="og:site_name" content="Hugo ʕ•ᴥ•ʔ Bear" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://www.nukelet.com/images/share.png" /><meta name="twitter:title" content="ARM64 QEMU setup for kernel development on Asahi Linux"/>
+<meta name="twitter:description" content="A debugging diary of how I wrote my first kernel patch."/>
+
+
+
+<meta itemprop="name" content="ARM64 QEMU setup for kernel development on Asahi Linux">
+<meta itemprop="description" content="A debugging diary of how I wrote my first kernel patch."><meta itemprop="datePublished" content="2024-11-22T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-11-22T00:00:00+00:00" />
+<meta itemprop="wordCount" content="570"><meta itemprop="image" content="https://www.nukelet.com/images/share.png" />
+<meta itemprop="keywords" content="linux,kernel," />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>nukelet&#39;s digital garden 🌱</h2>
+</a>
+<nav><a href="/">home</a>
+
+<a href="/blog">blog</a>
+
+<a href="https://notes.nukelet.com">notes</a>
+
+<a href="/whoami/">whoami</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>ARM64 QEMU setup for kernel development on Asahi Linux</h1>
+<p>
+  <i>
+    <time datetime='2024-11-22' pubdate>
+      22 Nov, 2024
+    </time>
+  </i>
+</p>
+
+<content>
+  <h1 id="tldr">TL;DR</h1>
+<p>For my fellow ADHD <del>goblins</del> people coming from a quick Google search:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2 -O debian-cloud.qcow2
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ qemu-system-aarch64 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -M virt -cpu max <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -m 2G -smp <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -kernel $PATH_TO_KERNEL_IMAGE <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -append <span style="color:#e6db74">&#34;console=ttyAMA0 earlyconsole printk loglevel=8 root=/dev/vda1&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -device virtio-blk-pci,drive<span style="color:#f92672">=</span>hd <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -drive <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>none,file<span style="color:#f92672">=</span>./debian-cloud.qcow2,format<span style="color:#f92672">=</span>qcow2,id<span style="color:#f92672">=</span>hd <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -nographic -enable-kvm
+</span></span></code></pre></div><h1 id="introduction">Introduction</h1>
+<p>I recently got my hands on a Macbook Pro M1 Touchbar, which is
+what I intend to use as my daily driver for the foreseeable future.
+Owning an ARM64 machine has been kind of a dream of mine for a while
+now, and I&rsquo;m very pleased with the software support for the platform,
+and the performance is on-par with my Ryzen 7 3700X desktop processor,
+at least for kernel compilation (while using a fraction of the power).
+Battery life is also great; there are still some rough edges in the
+kernel support for M1, but I would like to contribute to the Asahi
+kernel in the future as well.</p>
+<p>I wanted to reproduce the lightweight VM setup from the
+<a href="https://docs.lkcamp.dev/intro_tutorials/boot/">LKCAMP wiki</a>, which
+allows you to quickly spin up small VMs with KVM acceleration for
+kernel testing. The problem is we only tested it on x86_64 Linux
+systems, and I wanted to test it on my ARM64 host.</p>
+<p>Unfortunately one of the steps from that guide (generating a rootfs with
+<code>debootstrap</code>) doesn&rsquo;t seem to work properly for ARM64, so I had to figure out
+another way. Shout out to the <a href="https://flusp.ime.usp.br/">FLUSP</a> folks
+(the free software study group from the University of São Paulo) for
+their excellent
+<a href="https://flusp.ime.usp.br/kernel/qemu-libvirt-setup/">in-depth guide</a>
+covering much of the setup I&rsquo;m presenting here.</p>
+<h1 id="dependencies">Dependencies</h1>
+<ul>
+<li><code>qemu</code>
+<ul>
+<li>Ubuntu: <code>qemu</code></li>
+</ul>
+</li>
+<li><code>libguestfs</code>
+<ul>
+<li>Ubuntu: <code>libguestfs-tools</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="vm-setup">VM setup</h1>
+<p>We&rsquo;ll get a qcow2 Debian cloud image from here:
+<a href="http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest">http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2 -O debian-cloud.qcow2
+</span></span></code></pre></div><p>We can use <code>libguestfs</code> to inspect the contents of the qcow2 image (note:
+you might need to run as sudo):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo virt-filesystems --long -h --all -a debian-cloud.qcow2
+</span></span></code></pre></div><p>The output should look similar to this:</p>
+<pre tabindex="0"><code>Name        Type        VFS   Label  MBR  Size  Parent
+/dev/sda1   filesystem  ext4  -      -    1.8G  -
+/dev/sda15  filesystem  vfat  -      -    127M  -
+/dev/sda1   partition   -     -      -    1.9G  /dev/sda
+/dev/sda15  partition   -     -      -    127M  /dev/sda
+/dev/sda    device      -     -      -    2.0G  -
+</code></pre><p>Note that the root partition here is located in <code>/dev/sda1</code>
+(whereas <code>/dev/sda15</code> contains the EFI partition).
+We can use another tool from <code>libguestfs</code> to peek into the
+contents of each partition, e.g.:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo virt-ls -a debian-cloud.qcow2 -m /dev/sda1 /boot
+</span></span></code></pre></div><pre tabindex="0"><code>System.map-6.1.0-27-arm64
+config-6.1.0-27-arm64
+efi
+grub
+initrd.img-6.1.0-27-arm64
+vmlinuz-6.1.0-27-arm64
+</code></pre><p>For a quick sanity check, we can extract the kernel/initrd
+from the image&rsquo;s boot partition:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo virt-copy-out -a debian-cloud.qcow2 /boot .
+</span></span></code></pre></div><p>And then try to boot using them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ qemu-system-aarch64 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -M virt -cpu max <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -m 2G -smp <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -kernel ./boot/vmlinuz-* <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -initrd ./boot/initrd* <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -append <span style="color:#e6db74">&#34;console=ttyAMA0 earlyconsole printk loglevel=8 root=/dev/vda1&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -device virtio-blk-pci,drive<span style="color:#f92672">=</span>hd <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -drive <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>none,file<span style="color:#f92672">=</span>./debian-cloud.qcow2,format<span style="color:#f92672">=</span>qcow2,id<span style="color:#f92672">=</span>hd <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -nographic -enable-kvm
+</span></span></code></pre></div><p>You should be able to login as <code>root</code> without the need for
+a password. Note that we use <code>console=ttyAMA0</code> instead of
+the usual <code>console=ttyS0</code> (on <code>qemu-system-x86_64</code>).</p>
+<p>We can then boot from our own freshly compiled kernel,
+passing the path to the image (inside <code>arch/arm64/boot/Image</code>
+within the kernel source tree) with the <code>-kernel</code> flag (you
+can probably drop the initrd as well).</p>
+<ul>
+<li>Tip: you can use the <code>virtconfig</code> target, which is a trimmed
+version of arm64&rsquo;s <code>defconfig</code>, for somewhat faster
+compilation times.</li>
+</ul>
+<h2 id="todo">TODO:</h2>
+<ul>
+<li>Set up networking and SSH</li>
+<li>Test sharing a folder between host and guest</li>
+</ul>
+
+</content>
+<p>
+  
+  <a href="https://www.nukelet.com/blog/linux/">#Linux</a>
+  
+  <a href="https://www.nukelet.com/blog/kernel/">#Kernel</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

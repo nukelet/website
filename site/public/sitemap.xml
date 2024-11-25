@@ -3,10 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.nukelet.com/</loc>
-    <lastmod>2024-05-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.nukelet.com/arm64-qemu-setup-for-kernel-development-on-asahi-linux/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.nukelet.com/blog/</loc>
-    <lastmod>2024-05-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.nukelet.com/blog/kernel/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.nukelet.com/blog/linux/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.nukelet.com/blog/debian/</loc>
     <lastmod>2024-05-19T00:00:00+00:00</lastmod>
@@ -15,9 +24,6 @@
     <lastmod>2024-05-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.nukelet.com/installing-debian-10-on-the-i.mx53-devboard/</loc>
-    <lastmod>2024-05-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.nukelet.com/blog/linux/</loc>
     <lastmod>2024-05-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.nukelet.com/attending-cryptorave-2024/</loc>
@@ -31,9 +37,6 @@
   </url><url>
     <loc>https://www.nukelet.com/notes/</loc>
     <lastmod>2024-04-29T03:34:27-03:00</lastmod>
-  </url><url>
-    <loc>https://www.nukelet.com/blog/kernel/</loc>
-    <lastmod>2024-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.nukelet.com/my-first-kernel-patch-fixing-a-broken-bluetooth-dongle/</loc>
     <lastmod>2024-04-20T00:00:00+00:00</lastmod>
